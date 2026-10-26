@@ -50,3 +50,11 @@ that ruled it out — not "seemed worse."
 **Entscheidung:** `id` is a content hash: the first 12 hex characters of `sha256` over the whitespace-normalised requirement text, with an occurrence index appended when identical text appears more than once in a document. `label` is `A-<abschnitt>-<n>` for display only. Anything persisted references `id`; anything shown to a person uses `label`.
 **Verworfene Alternative(n):** `A-<abschnitt>-<n>` alone — readable, but unstable across document revisions. Hash alone — stable, but unusable in conversation ("the requirement 3f9a…").
 **Konsequenz:** Human decisions survive edits elsewhere in the document. Editing a requirement's own text gives it a new `id`, which is intended: an accepted finding on the old wording should not carry over to new wording. Cost: one more field, and the rule "persist `id`, display `label`" has to be kept consistently.
+
+## D-006 — M1 checks against the VgV regime only (above EU thresholds)
+**Datum:** 2026-10-26  **Status:** entschieden
+
+**Kontext:** The same sentence can get different verdicts depending on regime. Above the EU thresholds, § 31 Abs. 6 VgV always requires "oder gleichwertig" on a permitted product reference. Below them, § 23 Abs. 5 UVgO allows dropping it when a documented sachlicher Grund exists (e.g. compatibility with existing equipment). See `notes/reading.md`.
+**Entscheidung:** M1 assumes the VgV regime. Rules cite § 31 VgV and § 121 GWB. The sample document is written as an EU-wide procurement.
+**Verworfene Alternative(n):** UVgO only — more realistic for municipal buyers, but the rule needs to detect a documented justification, which is not a pattern match. A per-run `regime` input — the correct end state, but it changes the `Befund` model and doubles the rule test matrix before a single rule works.
+**Konsequenz:** Rules stay simple and the legal basis is unambiguous. **Known gap:** below-threshold procurement, the most common municipal case, is not covered, and the TED corpus (M3) has the same blind spot. Adding a `regime` input later means every rule's `rechtsgrundlage` becomes regime-dependent.
