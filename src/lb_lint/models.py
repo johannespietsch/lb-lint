@@ -34,9 +34,9 @@ class Span(BaseModel):
 
 
 class Abschnitt(BaseModel):
-    """A section of the document, delimited by Markdown headings; the LLM's unit of work."""
+    """A section of the document, delimited by Markdown headings; the LLM's unit of work (D-009)."""
 
-    nummer: int = Field(ge=1, description="1-based position in the document")
+    nummer: int = Field(ge=0, description="0 = preamble before the first section heading, then 1, 2, …")
     titel: str
     span: Span
 
@@ -56,7 +56,7 @@ class Anforderung(BaseModel):
     label: str = Field(pattern=r"^A-\d+-\d+$")
     text: str
     span: Span
-    abschnitt: int = Field(ge=1)
+    abschnitt: int = Field(ge=0)
     kategorie: Kategorie
     messbar: bool
 
