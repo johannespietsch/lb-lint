@@ -17,7 +17,7 @@ Anyone who writes public tender documents with the help of generative AI runs in
 Two formal defects come up constantly in drafts, and both are machine-checkable:
 
 - **Produktneutralität.** § 31 Abs. 6 VgV forbids a Leistungsbeschreibung from referring to a specific make, origin, or process that favours particular undertakings — unless justified *and* accompanied by *"oder gleichwertig."* Drafts written by people who know exactly which laptop they want violate this all the time. It is one of the most common formal defects, and getting it wrong can void a procurement.
-- **Eindeutig und erschöpfend.** § 121 Abs. 1 GWB requires the Leistungsbeschreibung to be unambiguous and exhaustive. "Ausreichende Performance" is not a requirement; it is a future dispute.
+- **So eindeutig wie möglich.** § 121 Abs. 1 GWB requires the Leistungsbeschreibung to describe the subject matter as unambiguously as possible, so that all bidders understand it the same way (below the thresholds, § 23 Abs. 1 UVgO adds *"erschöpfend"*). "Ausreichende Performance" is not a requirement; it is a future dispute.
 
 `lb-lint` is the quality gate that sits between whatever *produced* a Leistungsbeschreibung — a person, a template, or an LLM — and the human who *signs* it. It is designed for contracting authorities, procurement consultancies, and vendors of tender-drafting software who need machine-assisted drafting without giving up traceability.
 

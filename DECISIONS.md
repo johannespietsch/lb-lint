@@ -58,3 +58,15 @@ that ruled it out — not "seemed worse."
 **Entscheidung:** M1 assumes the VgV regime. Rules cite § 31 VgV and § 121 GWB. The sample document is written as an EU-wide procurement.
 **Verworfene Alternative(n):** UVgO only — more realistic for municipal buyers, but the rule needs to detect a documented justification, which is not a pattern match. A per-run `regime` input — the correct end state, but it changes the `Befund` model and doubles the rule test matrix before a single rule works.
 **Konsequenz:** Rules stay simple and the legal basis is unambiguous. **Known gap:** below-threshold procurement, the most common municipal case, is not covered, and the TED corpus (M3) has the same blind spot. Adding a `regime` input later means every rule's `rechtsgrundlage` becomes regime-dependent.
+
+## D-007 — Scope of the § 31 Abs. 6 VgV rule for M1
+**Datum:** 2026-10-26  **Status:** vorläufig — set without domain expertise, to be reviewed with a procurement practitioner
+
+**Kontext:** The statute is broader than a brand list can check (see `notes/reading.md`, Q2–Q5). Four scope questions had to be settled before writing the rule.
+**Entscheidung:**
+1. A brand/type reference **with** the addition still gets severity `hinweis` ("Begründung prüfen"). The addition is necessary but not sufficient: the reference must also be justified by the subject matter, which a rule cannot see.
+2. "oder vergleichbar" counts as the addition, like "oder gleichwertig". Supported by VK Mecklenburg-Vorpommern, Beschl. v. 29.11.2021, 2 VK 4/21 (VOB/A context, cited in [iww.de](https://www.iww.de/pbp/vob/voba-leitfabrikat-oder-gleichwertig-auftraggeber-darf-so-ausschreiben-bieter-aber-nicht-bieten-f156066); full text not checked). "Oder gleichwertig" remains the statutory and usual wording.
+3. Origin (*Herkunft, Ursprung*) and process references are out of scope; only brands and product types from the gazetteer are checked.
+4. No rule for norm references without "oder gleichwertig" (§ 31 Abs. 2 VgV).
+**Verworfene Alternative(n):** Covering all of § 31 Abs. 6 and Abs. 2 in M1 — legally more complete, but origin and process references need semantic detection, not a gazetteer, and the extra scope would not change the demo.
+**Konsequenz:** One gazetteer rule with two severities. **Known false negatives:** origin requirements ("aus europäischer Fertigung") and bare norm references, both of which appear in `samples/laptops_schulen.md`. If a client or practitioner rejects item 2, the fix is a one-word change in the rule plus a new eval run.

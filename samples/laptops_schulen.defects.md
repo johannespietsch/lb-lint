@@ -8,10 +8,10 @@ The key to the sample document. **This is not the golden-set annotation.** M2 an
 | 2 | 2 | `Das Display muss eine hohe Farbtreue aufweisen.` | No measurable unit | Missing-unit rule | `hohe` is not in the planned lexicon, so it needs the unit check |
 | 3 | 2 | `ausreichende Akkulaufzeit für einen vollständigen Schultag` | Vague | LB2xx (`ausreichend`) | "Schultag" makes it look measurable, but it is not |
 | 4 | 2 | `robust und für den Schulalltag geeignet` | Vague, no unit | LB2xx / missing unit | Not in the lexicon: tests recall beyond the word list |
-| 5 | 3 | `DIN EN ISO 9241-307` without "oder gleichwertig" | Norm reference without the addition | **Only if** the § 31(2) rule is adopted (reading note, Q5) | |
-| 6 | 3 | `aus europäischer Fertigung` | Origin reference | § 31(6) "Herkunft" — **not caught** by a brand gazetteer (Q4) | Recall gap, on purpose |
+| 5 | 3 | `DIN EN ISO 9241-307` without "oder gleichwertig" | Norm reference without the addition | **Not flagged** — no § 31(2) rule (D-007) | Legally a defect that lb-lint knowingly misses |
+| 6 | 3 | `aus europäischer Fertigung` | Origin reference | **Not flagged** — § 31(6) "Herkunft" is out of scope for M1 (D-007) | Known recall gap |
 | 7 | 4 | `Microsoft Office 2024 Education` | Brand without "oder gleichwertig" | LB1xx violation | |
-| 8 | 4 | `Lenovo ThinkPad Universal USB-C Dock oder vergleichbar` | "oder vergleichbar" instead of the statutory wording | Depends on Q3 | |
+| 8 | 4 | `Lenovo ThinkPad Universal USB-C Dock oder vergleichbar` | Brand reference with "oder vergleichbar" | Counts as the addition → `hinweis` only (D-007) | Not a defect under D-007; kept as a wording variant |
 | 9 | 5 | `zeitnah auszutauschen` | Vague | LB2xx (`zeitnah`) | |
 | 10 | 6 | `marktüblicher Verpackung` | Vague | LB2xx (`marktüblich`) | Low stakes, so a candidate for severity `hinweis` |
 
@@ -19,8 +19,8 @@ The key to the sample document. **This is not the golden-set annotation.** M2 an
 
 | Section | Text | Why it is there |
 |---|---|---|
-| 3 | `TCO Certified … oder gleichwertig` | A label reference that does carry the addition. Should not be flagged as a violation (Q2: a hint at most) |
-| 4 | `Microsoft Windows 11 Pro Education oder gleichwertig` + stated criteria for equivalence | The textbook-correct form, with the addition and a definition of equivalence |
+| 3 | `TCO Certified … oder gleichwertig` | A label reference that does carry the addition. Not a violation; `hinweis` "Begründung prüfen" (D-007) |
+| 4 | `Microsoft Windows 11 Pro Education oder gleichwertig` + stated criteria for equivalence | The textbook-correct form, with the addition and a definition of equivalence. Still gets the `hinweis` (D-007): the rule cannot see whether the reference is justified |
 | 6 | `Back-Office Medienausstattung` | "Office" in an address: a gazetteer false positive the M4 critique should catch |
 | 2 | `IEEE 802.11ax (Wi-Fi 6) oder neuer`, `HDMI 2.0`, `USB-C` | Interface standards, not brands. The gazetteer must not contain them |
 
