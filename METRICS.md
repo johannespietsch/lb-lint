@@ -10,7 +10,8 @@ Early numbers are kept — they are the baseline.
 | Extraction span-F1 | IoU ≥ 0.5 against golden set | M2 |
 | § 31(6) precision / recall | exact flag-set comparison | M2 |
 | Determinism rate | fraction of 5 runs at T=0 with identical normalised finding sets | M2 |
-| Offset-rejection rate | share of extracted spans failing verbatim validation | M1 |
+| Offset-repair rate | share of quotes located only by whitespace-tolerant matching (D-008) | M1 |
+| Offset-rejection rate | share of quotes not located at all (D-008) | M1 |
 | Cost per document | EUR, mean over golden set | M1 |
 | p95 latency | end-to-end, per document | M2 |
 | Retrieval MRR@5 | 15 hand-written German queries; vector / FTS / hybrid | M3 |
@@ -19,5 +20,5 @@ Early numbers are kept — they are the baseline.
 
 ## Runs
 
-| Datum | Änderung | Modell | Anforderungen | Offset-Rejection | Tokens (in/out) | EUR | Wall time |
-|---|---|---|---|---|---|---|---|
+| Datum | Änderung | Modell | Anforderungen | Offset-Repair | Offset-Rejection | Tokens (in/out) | EUR | Wall time |
+|---|---|---|---|---|---|---|---|---|

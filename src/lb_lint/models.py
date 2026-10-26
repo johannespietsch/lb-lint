@@ -96,7 +96,8 @@ class Pruefprotokoll(BaseModel):
     gestartet: datetime
     beendet: datetime
     aufrufe: list[LlmAufruf]
-    offset_verworfen: int = Field(ge=0, description="Extracted spans rejected by verbatim validation")
+    offset_repariert: int = Field(ge=0, description="Quotes located only by whitespace-tolerant matching")
+    offset_verworfen: int = Field(ge=0, description="Quotes not located in the source at all")
     abbruch_grund: str | None = None
 
     @property
