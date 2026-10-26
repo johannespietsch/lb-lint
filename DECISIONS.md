@@ -70,3 +70,11 @@ that ruled it out — not "seemed worse."
 4. No rule for norm references without "oder gleichwertig" (§ 31 Abs. 2 VgV).
 **Verworfene Alternative(n):** Covering all of § 31 Abs. 6 and Abs. 2 in M1 — legally more complete, but origin and process references need semantic detection, not a gazetteer, and the extra scope would not change the demo.
 **Konsequenz:** One gazetteer rule with two severities. **Known false negatives:** origin requirements ("aus europäischer Fertigung") and bare norm references, both of which appear in `samples/laptops_schulen.md`. If a client or practitioner rejects item 2, the fix is a one-word change in the rule plus a new eval run.
+
+## D-008 — Offsets are computed by code; the LLM only quotes
+**Datum:** 2026-10-26  **Status:** entschieden (refines D-002)
+
+**Kontext:** D-002 makes character offsets mandatory, but LLMs are unreliable at counting characters. If the model returns offsets, the rejection rate mostly measures counting errors, not whether the model quoted the source faithfully.
+**Entscheidung:** The LLM returns `AnforderungEntwurf` (verbatim `text`, `kategorie`, `messbar`) with no offsets and no IDs. Code locates `text` inside the section by exact search and computes the absolute `Span`, `id` and `label`. When the same text occurs more than once in a section, occurrences are assigned in order: each draft takes the first occurrence not already claimed. A draft whose text is not found is rejected and counted in `offset_verworfen`.
+**Verworfene Alternative(n):** The LLM returns `(start, end)` and code validates them (the original PLAN.md step 6). Rejected because it makes the model do arithmetic it is bad at, and mixes two failure modes (miscounting, paraphrasing) into one metric.
+**Konsequenz:** Offsets are deterministic, the prompt gets simpler, and `offset_verworfen` measures exactly one thing: non-verbatim quoting. Cost: duplicate-text handling, and the model can no longer point at *which* of two identical sentences it meant (taking them in order is the deterministic tiebreak).
