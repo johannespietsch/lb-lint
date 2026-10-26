@@ -34,3 +34,19 @@ that ruled it out — not "seemed worse."
 **Entscheidung:** § 31 Abs. 6 VgV and § 121 Abs. 1 GWB checks are rules in code (gazetteer, lexicon). The LLM's role is *extraction and context*; the rules' role is *verdict*.
 **Verworfene Alternative(n):** Ask the model "ist diese Anforderung produktneutral?" — rejected because its answer is not reproducible and cannot be defended in a Nachprüfungsverfahren.
 **Konsequenz:** Verdicts are reproducible and unit-testable without an API key. Rules will have false positives (e.g. "Windows" meaning *Fenster*) that only context can resolve — that is the critique node's job later, and it may only add advisory context, never override a rule.
+
+## D-004 — Rule IDs: short code plus readable name
+**Datum:** 2026-10-26  **Status:** entschieden
+
+**Kontext:** Every finding needs a rule identifier that people can cite, suppress, and filter on, the way linter users cite `E501`.
+**Entscheidung:** Each rule has a short code and a kebab-case name, e.g. `LB101 produktneutralitaet-verletzt`, `LB201 vage-formulierung`. The hundreds digit groups rules by legal provision (1xx Produktneutralität, 2xx Eindeutigkeit).
+**Verworfene Alternative(n):** Long names only (`PRODUKTNEUTRALITAET_VERLETZT`) — readable, but long to cite, and they give no grouping by provision, so filtering "all § 31 rules" needs a separate mapping.
+**Konsequenz:** Findings can be filtered by provision via the code prefix, and the name keeps output readable. Codes must never be reused once published, otherwise old audit records change meaning.
+
+## D-005 — Two identifiers per Anforderung: stable hash `id` + readable `label`
+**Datum:** 2026-10-26  **Status:** entschieden
+
+**Kontext:** Requirements are referenced by people (in the review UI, in discussion) and by stored data (accept/reject decisions from M5, caches, eval diffs). A positional ID like `A-3-2` shifts when a requirement is inserted earlier in the section, so stored decisions would silently attach to the wrong requirement on a re-check of a revised draft.
+**Entscheidung:** `id` is a content hash: the first 12 hex characters of `sha256` over the whitespace-normalised requirement text, with an occurrence index appended when identical text appears more than once in a document. `label` is `A-<abschnitt>-<n>` for display only. Anything persisted references `id`; anything shown to a person uses `label`.
+**Verworfene Alternative(n):** `A-<abschnitt>-<n>` alone — readable, but unstable across document revisions. Hash alone — stable, but unusable in conversation ("the requirement 3f9a…").
+**Konsequenz:** Human decisions survive edits elsewhere in the document. Editing a requirement's own text gives it a new `id`, which is intended: an accepted finding on the old wording should not carry over to new wording. Cost: one more field, and the rule "persist `id`, display `label`" has to be kept consistently.
