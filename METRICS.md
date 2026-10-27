@@ -22,6 +22,7 @@ Early numbers are kept — they are the baseline.
 
 | Datum | Änderung | Provider:Modell | Anforderungen | Offset-Repair | Offset-Rejection | Tokens (in/out) | EUR | Wall time |
 |---|---|---|---|---|---|---|---|---|
+| 2026-10-27 | M1 baseline, extraction only (no rules yet); `samples/laptops_schulen.md`, 1 run | anthropic:claude-haiku-5-5, effort low | 34 | 0 | 0 | 11 232 / 2 660 | 0.002192 | 20.7 s |
 
 ## Pricing basis
 
