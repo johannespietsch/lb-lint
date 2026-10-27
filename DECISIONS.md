@@ -94,3 +94,19 @@ that ruled it out — not "seemed worse."
 **Entscheidung:** Develop and test against Anthropic. All calls still go through the single provider chokepoint (`providers.py`), with the provider selected by config, so Mistral can be switched in without touching pipeline code. D-001 remains the target state.
 **Verworfene Alternative(n):** Wait for a Mistral key — blocks all LLM work. A stubbed LLM only — keeps CI key-free (still planned for tests), but produces no real extraction numbers.
 **Konsequenz:** Work continues now. **Until Mistral is wired in, the EU data-residency claim is a design property, not a running one**: README and demo must say which provider produced a result, and no real procurement document should be run through it. Baseline metrics recorded under Anthropic are not comparable with later Mistral numbers, so every `METRICS.md` row names its provider.
+
+## D-011 — Rules scan the source with their own deterministic sentence splitter
+**Datum:** 2026-10-27  **Status:** entschieden (closes I-001)
+
+**Kontext:** LB101/LB102 decide by whether "oder gleichwertig" is in the *same sentence* as the brand, so the verdict is only as reliable as the sentence boundary. spaCy's boundaries around statute citations are statistical and wrong in places (I-001).
+**Entscheidung:** `rules/saetze.py` splits the source with fixed rules: blank lines, headings and list items are hard boundaries; inside a block a sentence ends at `.`/`!`/`?` + whitespace, except after a number (German ordinals), a single letter (`z. B.`, `i. V. m.`) or a listed abbreviation. Statute names (`VgV`, `GWB`) are *not* abbreviations, so a full stop after them ends the sentence. Rules run on the whole source, independent of extraction; a finding is attached to the Anforderung containing it, or to none.
+**Verworfene Alternative(n):** The extracted Anforderung as the window — no splitter needed, but the verdict would depend on the LLM's span choice and a requirement the LLM missed would never be checked. spaCy's parser — statistical, wrong on exactly the cases that matter here.
+**Konsequenz:** Same text, same verdict, testable without a model. Known limits: a sentence ending in a number followed by a capitalised word ("bis 2027. Danach …") is not split, so the window is too wide there. `Befund.anforderung_id` is optional.
+
+## D-012 — The missing-unit check is deterministic; the LLM's `messbar` is advisory
+**Datum:** 2026-10-27  **Status:** entschieden
+
+**Kontext:** The first extraction run showed `messbar` from the LLM is inconsistent (e.g. "aus europäischer Fertigung" marked measurable, a yes/no language requirement marked not measurable).
+**Entscheidung:** LB202 `fehlende-messgroesse` flags an Anforderung that contains neither a digit nor a norm reference (DIN, EN, ISO, IEC, IEEE, VDE, ETSI). Severity `hinweis`. `messbar` stays in the model as context, never as a verdict.
+**Verworfene Alternative(n):** Use `messbar` directly — catches more nuance, but would be the first finding carrying a `rechtsgrundlage` decided by a model (against D-003).
+**Konsequenz:** Reproducible, but crude: yes/no features ("spritzwassergeschützt", "in deutscher Sprache") are flagged too. That is why it is only a `hinweis`. Which text it checks still depends on extraction; the verdict on a given text does not.

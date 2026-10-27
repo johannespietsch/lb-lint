@@ -67,7 +67,7 @@ class Befund(BaseModel):
     regel_id: str = Field(pattern=r"^LB\d{3}$")
     regel_name: str
     schwere: Schwere
-    anforderung_id: str
+    anforderung_id: str | None = Field(description="Containing Anforderung, if any (D-011)")
     begruendung: str
     rechtsgrundlage: str
     span: Span

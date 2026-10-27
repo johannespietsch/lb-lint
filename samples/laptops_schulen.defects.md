@@ -19,7 +19,7 @@ The key to the sample document. **This is not the golden-set annotation.** M2 an
 
 | Section | Text | Why it is there |
 |---|---|---|
-| 3 | `TCO Certified … oder gleichwertig` | A label reference that does carry the addition. Not a violation; `hinweis` "Begründung prüfen" (D-007) |
+| 3 | `TCO Certified … oder gleichwertig` | An eco label, not a brand: labels fall under § 34 VgV, which is out of scope. Not flagged |
 | 4 | `Microsoft Windows 11 Pro Education oder gleichwertig` + stated criteria for equivalence | The textbook-correct form, with the addition and a definition of equivalence. Still gets the `hinweis` (D-007): the rule cannot see whether the reference is justified |
 | 6 | `Back-Office Medienausstattung` | "Office" in an address: a gazetteer false positive the M4 critique should catch |
 | 2 | `IEEE 802.11ax (Wi-Fi 6) oder neuer`, `HDMI 2.0`, `USB-C` | Interface standards, not brands. The gazetteer must not contain them |
