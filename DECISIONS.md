@@ -110,3 +110,17 @@ that ruled it out — not "seemed worse."
 **Entscheidung:** LB202 `fehlende-messgroesse` flags an Anforderung that contains neither a digit nor a norm reference (DIN, EN, ISO, IEC, IEEE, VDE, ETSI). Severity `hinweis`. `messbar` stays in the model as context, never as a verdict.
 **Verworfene Alternative(n):** Use `messbar` directly — catches more nuance, but would be the first finding carrying a `rechtsgrundlage` decided by a model (against D-003).
 **Konsequenz:** Reproducible, but crude: yes/no features ("spritzwassergeschützt", "in deutscher Sprache") are flagged too. That is why it is only a `hinweis`. Which text it checks still depends on extraction; the verdict on a given text does not.
+
+## D-013 — No statistical NLP model: spaCy replaced by fixed rules and regular expressions
+**Datum:** 2026-10-27  **Status:** entschieden
+
+**Kontext:** The original plan used spaCy's German model (`de_core_news_lg`, ~560 MB) for two jobs: sentence segmentation before extraction, and the sentence window plus brand matching (`PhraseMatcher`) in the rule checks. Building the pipeline removed the need for both:
+1. *Extraction* is split by Markdown heading, not by sentence (D-009). The LLM sees whole sections; no sentence segmentation is involved.
+2. *The rule window* decides a legal verdict: "is *oder gleichwertig* in the same sentence as the brand?" Testing spaCy on real citations (I-001) showed its sentence boundaries come from a statistical parser and are wrong exactly where it matters ("… § 57 Abs. 1 VgV. Danach …" split in the wrong place, adjacent bullets merged). A verdict with a `rechtsgrundlage` must give the same answer twice and be explainable (D-003); a statistical guess is neither.
+
+**Entscheidung:** Remove spaCy and the model. Sentence windows come from a ~60-line rule-based splitter (D-011); brand names are matched with regular expressions over a reviewed list. The division of labour is explicit: **language understanding sits with the LLM (extraction, advisory context); every legal verdict sits with simple, predictable rules.**
+**Verworfene Alternative(n):** Keep spaCy and patch its tokenizer exceptions (the plan's fix) — the plan's predicted failure never occurred, the real one (statistical boundaries around statute names) is not fixable by exceptions. Keep spaCy only for `PhraseMatcher` — a 560 MB dependency for what a regular expression does here, and M3 uses its own embedding model, not spaCy.
+**Konsequenz:**
+- *For an auditor or Vergabekammer:* every boundary and every brand match can be explained by pointing at a line of code and a test case; no model version can change a verdict.
+- *For operations:* setup shrinks from a 560 MB model download to `uv sync`, which serves the "fresh clone with one API key" goal (M6).
+- *Cost:* regular expressions do not understand grammar. Inflected or split brand names ("Lenovo-kompatibel" works; "Windows-basierten" works; a brand split across a line break does not) are handled only where the pattern is written for them. If a future rule needs sentence structure, a statistical model may come back — behind the same boundary: advisory, never the verdict.

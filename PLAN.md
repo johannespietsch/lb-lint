@@ -49,7 +49,7 @@ flowchart TB
 
     subgraph worker["Worker process"]
         subgraph graph["LangGraph state machine"]
-            SEG["segment<br/>spaCy de_core_news_lg"]
+            SEG["segment<br/>by Markdown heading"]
             EXT["extract_anforderungen<br/>PydanticAI, typed + offsets"]
             RULE["rule_checks<br/>§31(6) VgV, §121 GWB<br/>deterministic"]
             RET["retrieve_vergleichbare<br/>hybrid: pgvector + german tsvector"]
@@ -103,7 +103,7 @@ flowchart TB
 
 | Component | What it does | Why it is built this way |
 |---|---|---|
-| **`segment/`** | spaCy `de_core_news_lg` pipeline with custom abbreviation rules for `Abs.`, `Nr.`, `ggf.`, `z. B.`, `i. V. m.` | German administrative text is not English text with umlauts; legal citations break off-the-shelf sentence segmentation |
+| **`segment/`** | Sections by Markdown heading (D-009); the rules use their own rule-based sentence splitter (D-011). No statistical NLP model (D-013) | German legal citations break statistical sentence segmentation (I-001); legally load-bearing boundaries must be deterministic |
 | **`extract/`** | PydanticAI agent returning `list[Anforderung]` with mandatory `(start, end)` character offsets, validated against the source | Typed LLM output with structural validation; offsets are what make findings clickable and auditable |
 | **`rules/`** | Deterministic checks: brand-name gazetteer + `oder gleichwertig` proximity (§ 31 Abs. 6 VgV), vagueness lexicon (§ 121 Abs. 1 GWB), missing-unit detection | Legally load-bearing checks live *outside* the model. This is how an LLM product can be revisionssicher |
 | **`retrieve/`** | Hybrid search over ~200 real German TED notices: `pgvector` cosine + Postgres `to_tsvector('german', …)` full-text ranking, reciprocal-rank fusion | Hybrid retrieval with German text-search config; Postgres FTS instead of a separate search cluster |
@@ -167,19 +167,19 @@ Reading makes the sample document and the rules credible instead of plausible:
 
 **Steps:**
 
-1. `uv init`, Python 3.12. `uv add pydantic-ai spacy python-dotenv rich typer`, then `uv run python -m spacy download de_core_news_lg`.
+1. `uv init`, Python 3.12. `uv add pydantic-ai python-dotenv rich typer`. (spaCy was installed here originally and removed in D-013.)
 2. **Create `DECISIONS.md`, `INCIDENTS.md`, `METRICS.md` before any code** (templates in section 5). Seed the first three decisions (D-001 to D-003, below).
 3. Write `samples/laptops_schulen.md` by hand — ~2 pages of plausible German Leistungsbeschreibung for a school laptop procurement. **Include deliberate defects:** a named brand without *"oder gleichwertig"*, a vague requirement (*"ausreichende Akkulaufzeit"*), a requirement with no measurable unit, and several correct requirements. This file is also the first eval fixture.
 4. `src/lb_lint/models.py`: Pydantic models. `Anforderung(id, text, start, end, abschnitt, kategorie, messbar: bool)`, `Befund(regel_id, schwere, anforderung_id, begruendung, rechtsgrundlage, span)`, `Pruefprotokoll(...)`.
-5. `src/lb_lint/segment.py`: load `de_core_news_lg`, add custom tokenizer/sentencizer rules for German legal abbreviations. Segment into *Abschnitte* by Markdown heading, not by sentence — sections are the LLM's unit of work.
+5. `src/lb_lint/segment.py`: segment into *Abschnitte* by Markdown heading, not by sentence — sections are the LLM's unit of work (D-009).
 6. `src/lb_lint/extract.py`: PydanticAI `Agent` with `output_type=list[AnforderungEntwurf]`. Prompt in German. Pass one Abschnitt; the model returns verbatim quotes only, and code locates each quote in the source and computes the offsets (D-008). Quotes that cannot be located are rejected and counted.
-7. `src/lb_lint/rules/produktneutral.py`: gazetteer of ~40 IT brand names (`Dell`, `Lenovo`, `ThinkPad`, `Microsoft Office`, `Windows 11`, `Intel Core i7`, …) + spaCy `PhraseMatcher`. Flag a match unless *"oder gleichwertig"* / *"oder vergleichbar"* appears in the same sentence. `rechtsgrundlage="§ 31 Abs. 6 VgV"`.
+7. `src/lb_lint/rules/produktneutral.py`: gazetteer of ~40 IT brand names (`Dell`, `Lenovo`, `ThinkPad`, `Microsoft Office`, `Windows 11`, `Intel Core i7`, …) + regular expressions over a deterministic sentence splitter (D-011, D-013). Flag a match unless *"oder gleichwertig"* / *"oder vergleichbar"* appears in the same sentence. `rechtsgrundlage="§ 31 Abs. 6 VgV"`.
 8. `src/lb_lint/rules/eindeutigkeit.py`: vagueness lexicon (`ausreichend`, `angemessen`, `zeitnah`, `nach Bedarf`, `marktüblich`, `hochwertig`) → `rechtsgrundlage="§ 121 Abs. 1 GWB"`.
 9. `src/lb_lint/providers.py`: one function; all LLM calls go through it. Returns `(result, usage)`. Logs tokens and EUR. Mistral via `pydantic_ai.models.mistral`.
 10. `src/lb_lint/cli.py` (typer): `lb-lint pruefe <file> --json`. `Makefile` targets `demo`, `test`, `eval`, `up`, `fmt`.
 11. Record the first `METRICS.md` numbers: extraction count, wall time, cost in EUR, tokens. **Keep the bad first number** — it is the baseline everything else is measured against.
 
-**Trap:** spaCy's German sentencizer splits *"gemäß § 31 Abs. 6 VgV"* after `Abs.` and *"z. B. Notebooks"* after `B.`, shredding requirements mid-sentence and producing offsets that point at fragments. Symptom: flagged spans look truncated. Two fixes, and the second is the real one: add abbreviation exceptions to the tokenizer — *and then stop sentence-segmenting before extraction altogether.* Segment by heading, let the LLM see whole sections, and use sentences only inside the deterministic rule checks, where a bounded window is actually needed. Log both the wrong fix and the right one in `INCIDENTS.md`.
+**Trap (as originally predicted — see I-001 for what actually happened, and D-013):** spaCy's German sentencizer splits *"gemäß § 31 Abs. 6 VgV"* after `Abs.` and *"z. B. Notebooks"* after `B.`, shredding requirements mid-sentence and producing offsets that point at fragments. Symptom: flagged spans look truncated. Two fixes, and the second is the real one: add abbreviation exceptions to the tokenizer — *and then stop sentence-segmenting before extraction altogether.* Segment by heading, let the LLM see whole sections, and use sentences only inside the deterministic rule checks, where a bounded window is actually needed. Log both the wrong fix and the right one in `INCIDENTS.md`.
 
 **Second trap:** the model returns requirement text that is *paraphrased* rather than verbatim — subtly, perhaps 20% of the time: normalised whitespace, an expanded abbreviation. Offsets then point at almost-but-not-quite the right span, which nobody notices until a finding highlights the wrong sentence in the UI. The offset validator in step 6 catches it. Log the rejection rate; it is a real metric of model reliability.
 
@@ -361,4 +361,4 @@ Every row dated. Every change to a prompt or model gets a new dated row.
 
 ## 6. Stack
 
-Python 3.12 · uv · LangGraph · PydanticAI · spaCy (`de_core_news_lg`) · sentence-transformers (`multilingual-e5-base`) · scikit-learn · networkx · FastAPI · python-socketio · RabbitMQ (aio-pika) · Postgres 16 + pgvector · SQLAlchemy 2.0 + Alembic · htmx · Mistral · pytest + testcontainers · GitHub Actions
+Python 3.12 · uv · LangGraph · PydanticAI · sentence-transformers (`multilingual-e5-base`) · scikit-learn · networkx · FastAPI · python-socketio · RabbitMQ (aio-pika) · Postgres 16 + pgvector · SQLAlchemy 2.0 + Alembic · htmx · Mistral · pytest + testcontainers · GitHub Actions
