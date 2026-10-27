@@ -86,3 +86,11 @@ that ruled it out — not "seemed worse."
 **Entscheidung:** Sections start at the most frequent ATX heading level (ties: the higher level). Lower-level headings stay inside their parent section. Non-blank text before the first section heading becomes section 0, "Präambel", and is checked like any other section.
 **Verworfene Alternative(n):** Every heading starts a section — simplest, but the title block becomes section 1 and every label is off by one from the visible numbering. Skipping the preamble — real drafts sometimes put requirements there, and they would be dropped silently.
 **Konsequenz:** In the common layout, labels match the visible numbering. The section number is still positional, not parsed from the heading, so a document with wrong or missing numbers gets correct positions but labels that don't match its headings. Setext headings (`===` underlines) and headings inside code blocks are not recognised.
+
+## D-010 — Anthropic as interim development provider (no Mistral key yet)
+**Datum:** 2026-10-27  **Status:** entschieden, befristet bis ein Mistral-Key vorliegt
+
+**Kontext:** D-001 makes Mistral (EU-hosted) the primary provider. No Mistral API key is available yet, and M1 needs a working LLM call.
+**Entscheidung:** Develop and test against Anthropic. All calls still go through the single provider chokepoint (`providers.py`), with the provider selected by config, so Mistral can be switched in without touching pipeline code. D-001 remains the target state.
+**Verworfene Alternative(n):** Wait for a Mistral key — blocks all LLM work. A stubbed LLM only — keeps CI key-free (still planned for tests), but produces no real extraction numbers.
+**Konsequenz:** Work continues now. **Until Mistral is wired in, the EU data-residency claim is a design property, not a running one**: README and demo must say which provider produced a result, and no real procurement document should be run through it. Baseline metrics recorded under Anthropic are not comparable with later Mistral numbers, so every `METRICS.md` row names its provider.
