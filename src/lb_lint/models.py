@@ -79,7 +79,9 @@ class LlmAufruf(BaseModel):
 
     model_id: str
     prompt_sha256: str
-    temperature: float
+    temperature: float | None = Field(default=None, description="Only if the provider accepted it (I-002)")
+    effort: str | None = Field(default=None, description="None = provider default")
+    thinking: str | None = Field(default=None, description="None = provider default")
     seed: int | None = None
     input_tokens: int
     output_tokens: int

@@ -24,3 +24,13 @@
 **Fix:** Open — decided with the sentence window for the rule checks (M1 step 7). Sections are split by heading only (D-009), so extraction is unaffected.
 **Wie hätte es auffallen müssen:** Exactly this way: by testing the segmenter on the sample before trusting it. The cases above become regression tests in step 7.
 **Im Mehrmandantenbetrieb:** A rule window that silently spans two sentences can pick up "oder gleichwertig" from the neighbouring sentence — a false negative on a legal check, for every tenant at once. Statistical boundaries can also change with a model upgrade, which is why the model version is pinned (`make setup`).
+
+## I-002 — "Temperature 0" no longer exists on the Anthropic API
+**Datum:** 2026-10-27  **Gefunden durch:** zufällig (API reference read while writing `providers.py`)
+
+**Symptom:** PLAN.md measures determinism "over 5 runs at temperature 0" and the audit record has a `temperature` field. Since API version 2026-10-21, any Messages request carrying `temperature`, `top_p` or `top_k` is rejected with a 400 on every Claude model. pydantic-ai 2.61 drops these settings silently for such models, so code setting `temperature=0` would run and the audit record would claim a setting that was never sent.
+**Erste Hypothese:** none — the plan's assumption was simply never checked against the current API.
+**Tatsächliche Ursache:** The plan was written against an older API surface.
+**Fix:** `LlmAufruf.temperature` is optional and recorded only when the provider actually accepted it. The settings that do apply (`effort`, `thinking`) are recorded instead. Determinism in M2 is measured at the provider's default sampling, and reported as such.
+**Wie hätte es auffallen müssen:** By checking every sampling assumption against the provider's current docs when writing the provider module. A test asserts the audit record never contains a temperature for an Anthropic call.
+**Im Mehrmandantenbetrieb:** An audit record stating a setting that was never applied is worse than no record: it is a false statement in exactly the document a Vergabekammer would read. Record what was sent, never what was configured.

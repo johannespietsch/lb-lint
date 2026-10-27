@@ -20,5 +20,17 @@ Early numbers are kept — they are the baseline.
 
 ## Runs
 
-| Datum | Änderung | Modell | Anforderungen | Offset-Repair | Offset-Rejection | Tokens (in/out) | EUR | Wall time |
+| Datum | Änderung | Provider:Modell | Anforderungen | Offset-Repair | Offset-Rejection | Tokens (in/out) | EUR | Wall time |
 |---|---|---|---|---|---|---|---|---|
+
+## Pricing basis
+
+Costs in EUR are computed with fixed, dated inputs (`providers.py`), so a re-run gives the same number.
+
+| Since | Model | USD / 1M input | USD / 1M output | Source |
+|---|---|---|---|---|
+| 2026-10-27 | claude-haiku-5-5 (≤ 100K-token prompts) | 0.10 | 0.50 | Claude API reference, as of 2026-10-06 |
+| 2026-10-27 | claude-haiku-5-5 (> 100K-token prompts) | 0.50 | 2.50 | same |
+| 2026-10-27 | claude-sonnet-5-5 | 2.00 | 10.00 | same |
+
+Exchange rate: 1 EUR = 1.1188 USD (ECB reference rate, 2026-10-26).
