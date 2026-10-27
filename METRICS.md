@@ -20,7 +20,7 @@ Early numbers are kept — they are the baseline.
 
 ## Runs
 
-| Datum | Änderung | Provider:Modell | Anforderungen | Offset-Repair | Offset-Rejection | Tokens (in/out) | EUR | Wall time |
+| Date | Change | Provider:model | Requirements | Offset-Repair | Offset-Rejection | Tokens (in/out) | EUR | Wall time |
 |---|---|---|---|---|---|---|---|---|
 | 2026-10-27 | M1 baseline, extraction only (no rules yet); `samples/laptops_schulen.md`, 1 run | anthropic:claude-haiku-5-5, effort low | 34 | 0 | 0 | 11 232 / 2 660 | 0.002192 | 20.7 s |
 | 2026-10-27 | M1 full pipeline (`make demo`), runs 2–3; 23 Befunde (3 LB101, 2 LB102, 3 LB201, 15 LB202) | anthropic:claude-haiku-5-5, effort low | 34 | 0 | 0 | 11 232 / 2 660 | 0.002192 | ≈ 20 s |

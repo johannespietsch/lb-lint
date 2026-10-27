@@ -305,13 +305,13 @@ Reading makes the sample document and the rules credible instead of plausible:
 
 ```markdown
 ## D-00N — <the decision, in one line>
-**Datum:** YYYY-MM-DD  **Status:** entschieden | revidiert durch D-00M
+**Date:** YYYY-MM-DD  **Status:** decided | superseded by D-00M
 
-**Kontext:** what forced a choice here at all.
-**Entscheidung:** what was done.
-**Verworfene Alternative(n):** what was not done, and the concrete cost
+**Context:** what forced a choice here at all.
+**Decision:** what was done.
+**Rejected Alternative(s):** what was not done, and the concrete cost
 that ruled it out — not "seemed worse."
-**Konsequenz:** what this now makes easy, and what it makes expensive later.
+**Consequences:** what this now makes easy, and what it makes expensive later.
 ```
 
 Seed entries, written in M1 before coding:
@@ -324,16 +324,16 @@ Seed entries, written in M1 before coding:
 
 ```markdown
 ## I-00N — <one-line symptom>
-**Datum:** YYYY-MM-DD  **Gefunden durch:** test | eval | zufällig | Nutzer
+**Date:** YYYY-MM-DD  **Found by:** test | eval | chance | user
 
 **Symptom:** what was actually observed, before it was understood.
-**Erste Hypothese:** what it was thought to be. Keep this even when wrong —
+**First hypothesis:** what it was thought to be. Keep this even when wrong —
   especially when wrong.
-**Tatsächliche Ursache:** what it was.
+**Actual cause:** what it was.
 **Fix:** what changed.
-**Wie hätte es auffallen müssen:** the test, metric, or alert that would have
+**How it should have been caught:** the test, metric, or alert that would have
   caught it earlier — and whether it was then added.
-**Im Mehrmandantenbetrieb:** what this failure mode would cost with many
+**In multi-tenant operation:** what this failure mode would cost with many
   tenants in production, and what would prevent it there.
 ```
 
