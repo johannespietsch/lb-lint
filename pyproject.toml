@@ -1,7 +1,7 @@
 [project]
 name = "lb-lint"
 version = "0.1.0"
-description = "Add your description here"
+description = "A linter for German tender specifications (Leistungsbeschreibungen)"
 readme = "README.md"
 authors = [
     { name = "johannespietsch", email = "4784765+johannespietsch@users.noreply.github.com" }
@@ -15,7 +15,7 @@ dependencies = [
 ]
 
 [project.scripts]
-lb-lint = "lb_lint:main"
+lb-lint = "lb_lint.cli:app"
 
 [build-system]
 requires = ["uv_build>=0.10.6,<0.11.0"]

@@ -4,7 +4,7 @@ from datetime import datetime
 from decimal import Decimal
 from enum import StrEnum
 
-from pydantic import BaseModel, Field, model_validator
+from pydantic import BaseModel, Field, computed_field, model_validator
 
 
 class Kategorie(StrEnum):
@@ -100,16 +100,20 @@ class Pruefprotokoll(BaseModel):
     aufrufe: list[LlmAufruf]
     offset_repariert: int = Field(ge=0, description="Quotes located only by whitespace-tolerant matching")
     offset_verworfen: int = Field(ge=0, description="Quotes not located in the source at all")
+    verworfene_zitate: list[str] = Field(default_factory=list, description="The rejected quotes, verbatim")
     abbruch_grund: str | None = None
 
+    @computed_field
     @property
     def input_tokens(self) -> int:
         return sum(a.input_tokens for a in self.aufrufe)
 
+    @computed_field
     @property
     def output_tokens(self) -> int:
         return sum(a.output_tokens for a in self.aufrufe)
 
+    @computed_field
     @property
     def cost_eur(self) -> Decimal:
         return sum((a.cost_eur for a in self.aufrufe), Decimal(0))

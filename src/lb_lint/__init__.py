@@ -1,2 +1,1 @@
-def main() -> None:
-    print("Hello from lb-lint!")
+"""lb-lint: a linter for German tender specifications."""
